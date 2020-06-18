@@ -92,14 +92,32 @@ public class HD {
         return livreTotal;
     }
 
+//    public List<Long> getPorcentagemDisponivel() {
+////        long desempenho = 0l;
+//        List<Long> desempenho = new ArrayList<Long>();
+//
+//        for (OSFileStore p : sisArray) {
+//               long utilizavel = p.getUsableSpace();
+//            boolean discoNull = "".equals(p.getType());
+//            if (utilizavel!=0 && !discoNull) {
+////                long utilizavel = p.getUsableSpace();
+////                Double porcentagem = (100d * utilizavel) / p.getTotalSpace();
+//                Double porcentagem = (100d * utilizavel);
+////                desempenho = String.format(" %s %.0f%% %n", p.getMount(), porcentagem);
+//                desempenho.add(utilizavel);
+//            }
+//        }
+//        return desempenho;
+//    }
     public String getPorcentagemDisponivel() {
         String desempenho = "";
         for (OSFileStore p : sisArray) {
             boolean discoNull = "".equals(p.getType());
-            if (!discoNull) {
-                long utilizavel = p.getUsableSpace();
-                Double porcentagem = (100d * utilizavel) / p.getTotalSpace();
+            long utilizavel = p.getUsableSpace();
+            if (utilizavel!=0 && !discoNull) {
+                Double porcentagem = (100d * utilizavel) / p.getTotalSpace();              
                 desempenho = String.format(" %s %.0f%% %n", p.getMount(), porcentagem);
+              
             }
         }
         return desempenho;
@@ -109,8 +127,8 @@ public class HD {
         String desempenho = "";
         for (OSFileStore p : sisArray) {
             boolean discoNull = "".equals(p.getType());
-            if (!discoNull) {
-                long utilizavel = p.getUsableSpace();
+            long utilizavel = p.getUsableSpace();
+            if (utilizavel!=0 && !discoNull) {
                 Double dispo = (100d * utilizavel) / p.getTotalSpace();
                 Double porcentagem = 100d - dispo;
                 desempenho = String.format("%.0f%%", porcentagem);

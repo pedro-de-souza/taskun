@@ -38,8 +38,8 @@ public class TesteConsole {
         System.out.println(ram.getDisponivel());
         System.out.println(ram.getVirutalMemoriaTotal());
         System.out.println(ram.getNumerosDePentes());
-        System.out.println(ram.getTipoMemoria());
-        System.out.println(ram.getClockSpeed());
+//        System.out.println(ram.getTipoMemoria());
+//        System.out.println(ram.getClockSpeed());
         System.out.println(ram.getDesempenhoMemoria());
         System.out.println("}\n");
         

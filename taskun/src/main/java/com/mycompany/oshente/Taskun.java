@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import javax.swing.Timer;
 import oshi.SystemInfo;
 import oshi.hardware.HardwareAbstractionLayer;
+import oshi.software.os.OperatingSystem;
 
 /**
  *
@@ -26,6 +27,7 @@ public class Taskun extends javax.swing.JFrame {
         SystemInfo si = new SystemInfo();
         HardwareAbstractionLayer hal = si.getHardware();
         
+        OperatingSystem os = new SystemInfo().getOperatingSystem();
         CPU cpu = new CPU();
         RAM ram = new RAM();
         HD hd = new HD();
@@ -35,7 +37,7 @@ public class Taskun extends javax.swing.JFrame {
         lblHDOcupado.setText(hd.getPorcentagemOcupada());
         lblThreands.setText(cpu.getThreads());
         lblProcesses.setText(cpu.getProcesses());
-        
+//        
         lblDiscoRigido.setText(hd.getDiscoAlocado().replaceAll(" Fixo", ""));
         Integer valueDisk = Integer.parseInt(hd.getPorcentagemOcupada().replaceAll("%", ""));
         prgDisco.setValue(valueDisk);
@@ -43,7 +45,7 @@ public class Taskun extends javax.swing.JFrame {
         
         
         //Sistema Operacional
-        lblSistema.setText(si.getOperatingSystem().toString());
+        lblSistema.setText(String.format("%s %s %s", os.getManufacturer(),os.getFamily(),os.getVersionInfo().getVersion()));
         lblSistemBit.setText(String.format(" Sistema operacional de %d bits", (si.getOperatingSystem().getBitness())));
        
         //CPU
@@ -53,26 +55,26 @@ public class Taskun extends javax.swing.JFrame {
         lblRAMTotal.setText(ram.getTotalMemoria());
         lblRAMUtilizavel.setText(ram.getUtilizavel());
         lblRAMDisponivel.setText(ram.getDisponivel());
-        lblRAMTipo.setText(ram.getTipoMemoria());
-        lblRAMClock.setText(ram.getClockSpeed());
+//        lblRAMTipo.setText(ram.getTipoMemoria());
+//        lblRAMClock.setText(ram.getClockSpeed());
         
         //HD
         lblDisco.setText(hd.getDiscoAlocado().replaceAll(" Fixo", ""));
         lblDiscoTipo.setText(hd.getTipoSADisco());
         
         ActionListener action = (ActionEvent actionEvent) -> {
-            
-        
-            System.out.println("Processando...");
+//            
+//        
+//            System.out.println("Processando...");
             lblTempoAtividade.setText(cpu.getUptime());
             lblCPUDesempenho.setText(cpu.getDesempenho());
             lblRAMDesempenho.setText(ram.getDesempenhoMemoria());
             lblHDOcupado.setText(hd.getPorcentagemOcupada());
             lblThreands.setText(cpu.getThreads());
             lblProcesses.setText(cpu.getProcesses());
-        
+//        
         };
-        
+//        
         Timer timer = new Timer(10, action);
         timer.start();
         
