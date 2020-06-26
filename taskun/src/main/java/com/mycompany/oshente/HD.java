@@ -5,11 +5,9 @@
  */
 package com.mycompany.oshente;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.TimeUnit;
 import oshi.SystemInfo;
 import oshi.hardware.HWDiskStore;
-import oshi.hardware.HWPartition;
 import oshi.software.os.FileSystem;
 import oshi.software.os.OSFileStore;
 import oshi.util.FormatUtil;
@@ -24,11 +22,24 @@ public class HD {
     private FileSystem sistemaArquivo;
     private OSFileStore[] sisArray;
     private String hardDiskPrincipal;
+    private Double calculo;
 
     public HD() {
         hd = new SystemInfo().getHardware().getDiskStores();
         sistemaArquivo = new SystemInfo().getOperatingSystem().getFileSystem();
         sisArray = sistemaArquivo.getFileStores();
+        calculo = Math.pow(10, 9);
+    }
+
+    public String getNomeModelo() {
+        String modelHd = "";
+        for (HWDiskStore disk : hd) {
+            boolean discoNull = disk.getReads() > 0 || disk.getWrites() > 0;
+            if (discoNull) {
+                modelHd = String.format("%s ", disk.getModel());
+            }
+        }
+        return modelHd.replaceFirst("[(].*?[)]", "");
     }
 
     public String getQtdDisk() {
@@ -39,7 +50,7 @@ public class HD {
                 cont++;
             }
         }
-        return String.format(" %d Discos disponíveis\n", cont);
+        return String.format("%d Discos disponíveis ", cont);
     }
 
     public String getSizeDisk() {
@@ -47,10 +58,19 @@ public class HD {
         for (Integer d = 0; d < hd.length; d++) {
             boolean discoNull = hd[d].getReads() > 0 || hd[d].getWrites() > 0;
             if (discoNull) {
-                sizeHds = String.format(" [DISK %d : %s]\n", d, FormatUtil.formatBytesDecimal(hd[d].getSize()));
+                String size = String.format("%s", FormatUtil.formatBytesDecimal(hd[d].getSize()));
+                char[] charArray = size.toCharArray();
+                for (char c : charArray) {
+                    if (c == ',') {
+                        sizeHds += "";
+                        break;
+                    } else {
+                        sizeHds += c;
+                    }
+                }
             }
         }
-        return sizeHds;
+        return sizeHds + " GB";
     }
 
     public String getDiscoAlocado() {
@@ -58,10 +78,10 @@ public class HD {
         for (OSFileStore d : sisArray) {
             boolean discoNull = "".equals(d.getType());
             if (!discoNull) {
-                discos = String.format(" %s %n", d.getName());
+                discos = String.format("%s", d.getName());
             }
         }
-        return discos;
+        return discos.replaceAll(" Fixo", "");
     }
 
     public String getTipoSADisco() {
@@ -70,54 +90,60 @@ public class HD {
             boolean discoNull = "".equals(t.getType());
             if (!discoNull) {
 //                tipos = String.format(" %s Tipo de sistema de arquivos: %s %n", t.getMount(), t.getType());
-                tipos = String.format("%s %n", t.getType());
+                tipos = String.format("%s", t.getType());
             }
         }
         return tipos;
     }
 
-    public String getDiscosTotalLivre() {
+    public String getDiscosTotalDisponivel() {
         String livreTotal = "";
         for (OSFileStore d : sisArray) {
             boolean discoNull = "".equals(d.getType());
             if (!discoNull) {
-                long livre = d.getUsableSpace();
-//                utilizavelTotal += String.format(" %s Utilizável: %s Total: %s %n", d.getMount(),
-//                        FormatUtil.formatBytes(utilizavel), FormatUtil.formatBytes(d.getTotalSpace())
-                livreTotal = String.format(" %s livre de %s %n",
-                        FormatUtil.formatBytesDecimal(livre), FormatUtil.formatBytesDecimal(d.getTotalSpace())
-                );
+                String livre = FormatUtil.formatBytes(d.getUsableSpace()).replaceAll(" GiB", "");
+                char[] charArray = livre.toCharArray();
+                for (char c : charArray) {
+                    if (c == ',') {
+                        livreTotal += "";
+                        break;
+                    } else {
+                        livreTotal += c;
+                    }
+                }
             }
         }
         return livreTotal;
     }
 
-//    public List<Long> getPorcentagemDisponivel() {
-////        long desempenho = 0l;
-//        List<Long> desempenho = new ArrayList<Long>();
-//
-//        for (OSFileStore p : sisArray) {
-//               long utilizavel = p.getUsableSpace();
-//            boolean discoNull = "".equals(p.getType());
-//            if (utilizavel!=0 && !discoNull) {
-////                long utilizavel = p.getUsableSpace();
-////                Double porcentagem = (100d * utilizavel) / p.getTotalSpace();
-//                Double porcentagem = (100d * utilizavel);
-////                desempenho = String.format(" %s %.0f%% %n", p.getMount(), porcentagem);
-//                desempenho.add(utilizavel);
-//            }
-//        }
-//        return desempenho;
-//    }
+    public String getDiscosTotalUtilizavel() {
+        String utilizavelTotal = "";
+        for (OSFileStore d : sisArray) {
+            boolean discoNull = "".equals(d.getType());
+            if (!discoNull) {
+                String utilizavel = FormatUtil.formatBytes(d.getTotalSpace()).replaceAll(" GiB", "");
+                char[] charArray = utilizavel.toCharArray();
+                for (char c : charArray) {
+                    if (c == ',') {
+                        utilizavelTotal += "";
+                        break;
+                    } else {
+                        utilizavelTotal += c;
+                    }
+                }
+            }
+        }
+        return utilizavelTotal;
+    }
+
     public String getPorcentagemDisponivel() {
         String desempenho = "";
         for (OSFileStore p : sisArray) {
             boolean discoNull = "".equals(p.getType());
             long utilizavel = p.getUsableSpace();
-            if (utilizavel!=0 && !discoNull) {
-                Double porcentagem = (100d * utilizavel) / p.getTotalSpace();              
-                desempenho = String.format(" %s %.0f%% %n", p.getMount(), porcentagem);
-              
+            if (utilizavel == 0 && !discoNull) {
+                Double porcentagem = (100d * utilizavel) / p.getTotalSpace();
+                desempenho = String.format("%s %.0f%% %n", p.getMount(), porcentagem);
             }
         }
         return desempenho;
@@ -128,10 +154,10 @@ public class HD {
         for (OSFileStore p : sisArray) {
             boolean discoNull = "".equals(p.getType());
             long utilizavel = p.getUsableSpace();
-            if (utilizavel!=0 && !discoNull) {
+            if (utilizavel != 0 && !discoNull) {
                 Double dispo = (100d * utilizavel) / p.getTotalSpace();
                 Double porcentagem = 100d - dispo;
-                desempenho = String.format("%.0f%%", porcentagem);
+                desempenho = String.format("%.0f", porcentagem);
             }
         }
         return desempenho;
@@ -148,6 +174,17 @@ public class HD {
         return volume;
     }
 
+    public String getTempoTransferencia(HWDiskStore[] d) {
+        Integer segFormat = 0;
+        for (HWDiskStore disk : d) {
+            boolean discoNull = disk.getReads() > 0 || disk.getWrites() > 0;
+            if (discoNull) {
+                Long seconds = TimeUnit.MILLISECONDS.toSeconds(disk.getTransferTime()) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(disk.getTransferTime()));
+                segFormat = seconds.intValue(); 
+            }
+        }
+        return String.format("%d", segFormat);
+    }
 //    public List<String> getFilesVolume() {
 //        List<String> valumesList = new ArrayList<String>();
 //        for (OSFileStore v : sisArray) {
@@ -157,42 +194,5 @@ public class HD {
 //        }
 //        return valumesList;
 //    }
-    private void hardDisk() {
-        for (HWDiskStore disk : hd) {
-            boolean readwrite = disk.getReads() > 0 || disk.getWrites() > 0;
-            System.out.format(" Size: %s, reads: %s (%s), writes: %s (%s), xfer: %s ms%n",
-                    disk.getSize() > 0 ? FormatUtil.formatBytesDecimal(disk.getSize()) : "?",
-                    readwrite ? disk.getReads() : "?", readwrite ? FormatUtil.formatBytes(disk.getReadBytes()) : "?",
-                    readwrite ? disk.getWrites() : "?", readwrite ? FormatUtil.formatBytes(disk.getWriteBytes()) : "?",
-                    readwrite ? disk.getTransferTime() : "?");
-            HWPartition[] partitions = disk.getPartitions();
-
-            for (HWPartition part : partitions) {
-                System.out.format(" |-- %s: %s (%s) Maj:Min=%d:%d, size: %s%s%n", part.getIdentification(),
-                        part.getName(), part.getType(), part.getMajor(), part.getMinor(),
-                        FormatUtil.formatBytesDecimal(part.getSize()),
-                        part.getMountPoint().isEmpty() ? "" : " @ " + part.getMountPoint());
-            }
-        }
-    }
-
-    private void fileSystem() {
-        System.out.println("File System:");
-
-        System.out.format(" File Descriptors: %d/%d%n", sistemaArquivo.getOpenFileDescriptors(),
-                sistemaArquivo.getMaxFileDescriptors());
-
-        OSFileStore[] fsArray = sistemaArquivo.getFileStores();
-        for (OSFileStore fs : fsArray) {
-            long usable = fs.getUsableSpace();
-            long total = fs.getTotalSpace();
-            System.out.format(" %s (%s) [%s] %s of %s free (%.1f%%) is %s "
-                    + (fs.getLogicalVolume() != null && fs.getLogicalVolume().length() > 0 ? "[%s]" : "%s")
-                    + " and is mounted at %s%n", fs.getName(),
-                    fs.getDescription().isEmpty() ? "file system" : fs.getDescription(), fs.getType(),
-                    FormatUtil.formatBytes(usable), FormatUtil.formatBytes(fs.getTotalSpace()), 100d * usable / total,
-                    fs.getVolume(), fs.getLogicalVolume(), fs.getMount());
-        }
-    }
 
 }

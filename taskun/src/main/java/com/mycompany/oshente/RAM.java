@@ -44,7 +44,7 @@ public class RAM {
             String capacity = String.format("%.0f", p.getCapacity() / calculo).replaceAll("[^0-9]", "");
             total += Integer.parseInt(capacity);
         }
-        return String.format("%.1f GB", total);
+        return String.format("%.1f", total).replaceAll(",", ".");
     }
     public String getVirutalMemoriaTotal(){
         Double total = (double)ram.getVirtualMemory().getSwapTotal();
@@ -58,19 +58,19 @@ public class RAM {
     }
         
     public String getUtilizavel(){      
-        return FormatUtil.formatBytes(ram.getTotal()).replaceAll("i", "");
+        return FormatUtil.formatBytes(ram.getTotal()).replaceAll(" GiB", "").replaceAll(",", ".");
     }
     public String getDisponivel() {
-        return String.format("%.1f GB",(ram.getTotal() - ram.getAvailable()) / calculo);
+        return String.format("%.1f",(ram.getTotal() - ram.getAvailable()) / calculo).replaceAll(",", ".");
     }
 
     public String getClockSpeed() {
         Double clockSpeed = (double) memoriaFisica[0].getClockSpeed();
-        return String.format("%.1f GHz", clockSpeed / calculo);
+        return String.format("%.1f", clockSpeed / calculo).replaceAll(",", ".");
     }
 
     public String getDesempenhoMemoria() {
         Double ramDesempenho = (double) (ram.getTotal() - ram.getAvailable());
-        return String.format("%.0f%%", (ramDesempenho * 100.0) / ram.getTotal());
+        return String.format("%.0f", (ramDesempenho * 100.0) / ram.getTotal()).replaceAll(",", ".");
     }
 }
