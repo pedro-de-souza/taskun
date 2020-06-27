@@ -11,6 +11,8 @@ import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import oshi.SystemInfo;
+import oshi.software.os.OperatingSystem;
 
 public class Conexao {
 
@@ -65,6 +67,7 @@ public class Conexao {
     };
 
     public Conexao() {
+        OperatingSystem sistema = new SystemInfo().getOperatingSystem();
         System.out.println("Conectando ao banco");
         try {
             Class.forName(this.getDrive());
@@ -93,8 +96,11 @@ public class Conexao {
         //RAM
         memoriaRAM = ram.getTotalMemoria();
         mRAMUtilizavel = ram.getUtilizavel();
-        tipoMemoriaRAM = ram.getTipoMemoria();
-        velocidadeRAM = ram.getClockSpeed();
+        try {
+            tipoMemoriaRAM = ram.getTipoMemoria();
+            velocidadeRAM = ram.getClockSpeed();
+        } catch (ArrayIndexOutOfBoundsException ex) {
+        }
         //HD
         modeloHD = hd.getNomeModelo() + hd.getSizeDisk();
         discoHD = hd.getDiscoAlocado();
@@ -103,18 +109,21 @@ public class Conexao {
         disponivelHD = hd.getDiscosTotalDisponivel();
         //GPU
         modeloGPU = gpu.getNomePlaca();
-        memoriaGPU = gpu.getRAM();
-        versaoGPU = gpu.getVersaoGPU();
+
+        if (sistema.getFamily().equals("Windows")) {
+            versaoGPU = gpu.getVersaoGPU();
+            memoriaGPU = gpu.getRAM();
+        }
 
 //        timer.scheduleAtFixedRate(chamandoEnviarDadosDash, TEMPO1, TEMPO1);
     }
-    
+
     private Statement stmtUpdate() throws SQLException {
         Statement stmt = conect.createStatement();
         return stmt;
     }
-     
-    public Boolean autenticacaoCliente(String email, String senha){
+
+    public Boolean autenticacaoCliente(String email, String senha) {
         boolean dadoExiste = false;
         ResultSet rs;
         try {
@@ -123,7 +132,7 @@ public class Conexao {
 
             String sqlSelect = "";
 
-            sqlSelect =String.format("SELECT * FROM [dbo].[Cliente] WHERE email = '%s' AND senha = '%s'", email, senha) ;
+            sqlSelect = String.format("SELECT * FROM [dbo].[Cliente] WHERE email = '%s' AND senha = '%s'", email, senha);
 
             pst = conect.prepareStatement(sqlSelect);
             rs = stmtUpdate().executeQuery(sqlSelect);
@@ -161,7 +170,7 @@ public class Conexao {
 
     public void addDadoTblMaquinas() {
         try {
-            
+
             Statement stmt = conect.createStatement();
 
             String sqlInsert = "";
@@ -171,13 +180,17 @@ public class Conexao {
                     + "hd_modelo,hd_disco, hd_e_tipo, hd_utilizavel, hd_disponivel, modelo_gpu, memoria_gpu, version_gpu, fk_Cliente) "
                     + " VALUES ('%s','%s','%s','%s',%s,%s,'%s',%s,'%s','%s','%s',%s,%s,'%s','%s','%s',%s);",
                     this.getNomeMaq(), this.getSistemOpera(), this.getTipoSistema(), this.getModeloCPU(), this.getMemoriaRAM(), this.getmRAMUtilizavel(), this.getTipoMemoriaRAM(), this.getVelocidadeRAM(),
-                    this.getModeloHD(), this.getDiscoHD(), this.getHdETipo(), this.getUtilizavelHD(), this.getDisponivelHD(), this.getModeloGPU(), this.getMemoriaGPU(), this.getVersaoGPU(),this.getId_Cliente());
+                    this.getModeloHD(), this.getDiscoHD(), this.getHdETipo(), this.getUtilizavelHD(), this.getDisponivelHD(), this.getModeloGPU(), this.getMemoriaGPU(), this.getVersaoGPU(), this.getId_Cliente());
 //  
             //sqlInsert = "insert into teste (nome) values ('"+this.getModeloCPU()+"')";
             stmt.executeUpdate(sqlInsert);
             System.out.println("valor adicionado");
 
         } catch (SQLException e) {
+            String sqlInsert = String.format(" VALUES ('%s','%s','%s','%s',%s,%s,'%s',%s,'%s','%s','%s',%s,%s,'%s','%s','%s',%s);",
+                    this.getNomeMaq(), this.getSistemOpera(), this.getTipoSistema(), this.getModeloCPU(), this.getMemoriaRAM(), this.getmRAMUtilizavel(), this.getTipoMemoriaRAM(), this.getVelocidadeRAM(),
+                    this.getModeloHD(), this.getDiscoHD(), this.getHdETipo(), this.getUtilizavelHD(), this.getDisponivelHD(), this.getModeloGPU(), this.getMemoriaGPU(), this.getVersaoGPU(), this.getId_Cliente());
+            System.out.println(sqlInsert);
             System.out.println("Não foi possivel adicionar o valor");
             System.out.println(e);
         }
@@ -204,7 +217,6 @@ public class Conexao {
             System.out.println(e);
         }
     }
-
 
     public boolean verificarDadoTabela() {
 
@@ -414,6 +426,5 @@ public class Conexao {
     public Integer getId_Cliente() {
         return id_Cliente;
     }
-    
 
 }

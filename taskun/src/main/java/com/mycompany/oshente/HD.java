@@ -111,6 +111,7 @@ public class HD {
                         livreTotal += c;
                     }
                 }
+                break;
             }
         }
         return livreTotal;
@@ -130,7 +131,9 @@ public class HD {
                     } else {
                         utilizavelTotal += c;
                     }
+                    
                 }
+                break;
             }
         }
         return utilizavelTotal;
