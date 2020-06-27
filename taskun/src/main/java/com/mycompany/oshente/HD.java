@@ -58,7 +58,7 @@ public class HD {
         for (Integer d = 0; d < hd.length; d++) {
             boolean discoNull = hd[d].getReads() > 0 || hd[d].getWrites() > 0;
             if (discoNull) {
-                String size = String.format("%s", FormatUtil.formatBytesDecimal(hd[d].getSize()));
+                String size = String.format("%s", FormatUtil.formatBytesDecimal(hd[d].getSize()).replaceAll(" GB", ""));
                 char[] charArray = size.toCharArray();
                 for (char c : charArray) {
                     if (c == ',') {
@@ -68,6 +68,7 @@ public class HD {
                         sizeHds += c;
                     }
                 }
+                break;
             }
         }
         return sizeHds + " GB";
@@ -90,7 +91,7 @@ public class HD {
             boolean discoNull = "".equals(t.getType());
             if (!discoNull) {
 //                tipos = String.format(" %s Tipo de sistema de arquivos: %s %n", t.getMount(), t.getType());
-                tipos = String.format("%s", t.getType());
+                tipos = String.format("%s", t.getType().replaceAll(".", ""));
             }
         }
         return tipos;

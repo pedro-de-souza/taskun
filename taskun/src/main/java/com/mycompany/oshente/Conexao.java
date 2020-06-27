@@ -178,7 +178,7 @@ public class Conexao {
             sqlInsert = String.format("INSERT INTO Maquina "
                     + "(nome_Maquina, sistema_Operacional, tipo_sistema,cpu_modelo, memoria_ram_total,memoria_ram_utilizavel,tipo_memoria_ram, velocidade_memoria_ram,"
                     + "hd_modelo,hd_disco, hd_e_tipo, hd_utilizavel, hd_disponivel, modelo_gpu, memoria_gpu, version_gpu, fk_Cliente) "
-                    + " VALUES ('%s','%s','%s','%s',%s,%s,'%s',%s,'%s','%s','%s',%s,%s,'%s','%s','%s',%s);",
+                    + " VALUES ('%s','%s','%s','%s',%s,%s,'%s',%s,'%s','%s','%s',%s,%s,'%s',%s,'%s',%s);",
                     this.getNomeMaq(), this.getSistemOpera(), this.getTipoSistema(), this.getModeloCPU(), this.getMemoriaRAM(), this.getmRAMUtilizavel(), this.getTipoMemoriaRAM(), this.getVelocidadeRAM(),
                     this.getModeloHD(), this.getDiscoHD(), this.getHdETipo(), this.getUtilizavelHD(), this.getDisponivelHD(), this.getModeloGPU(), this.getMemoriaGPU(), this.getVersaoGPU(), this.getId_Cliente());
 //  
