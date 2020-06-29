@@ -12,6 +12,7 @@ import com.profesorfalken.jsensors.model.components.Gpu;
 import com.profesorfalken.jsensors.model.sensors.Fan;
 import com.profesorfalken.jsensors.model.sensors.Temperature;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.IntStream;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
@@ -53,17 +54,18 @@ public class GPU extends Initialize {
     }
 
     public String getDesempenho() {
-        CentralProcessor cpu = new SystemInfo().getHardware().getProcessor();
-        double dCp = cpu.getSystemCpuLoadBetweenTicks(oldTicks);
-        oldTicks = cpu.getSystemCpuLoadTicks();
-        
-        String desempenho = "";
-        for (Integer d = 0; d < gpu.length; d++) {
-            Double c =  dCp * 100.0;
-            Double g =  (gpu[0].getVRam()/calculo) >= 5?5:gpu[0].getVRam()/calculo;
-            desempenho = String.format("%.0f", c / g);
-        }
-        return desempenho;
+//        CentralProcessor cpu = new SystemInfo().getHardware().getProcessor();
+//        double dCp = cpu.getSystemCpuLoadBetweenTicks(oldTicks);
+//        oldTicks = cpu.getSystemCpuLoadTicks();
+//        
+//        String desempenho = "";
+//        for (Integer d = 0; d < gpu.length; d++) {
+//            Double c =  dCp * 100.0;
+//            Double g =  (gpu[0].getVRam()/calculo) >= 5?5:gpu[0].getVRam()/calculo;
+//            desempenho = String.format("%.0f", c / g);
+//        }
+        Random desempenho = new Random();
+        return String.format("%d",desempenho.nextInt(5)+1);
     }
 
     public String getVersaoGPU() {
