@@ -91,7 +91,7 @@ public class HD {
             boolean discoNull = "".equals(t.getType());
             if (!discoNull) {
 //                tipos = String.format(" %s Tipo de sistema de arquivos: %s %n", t.getMount(), t.getType());
-                tipos = String.format("%s", t.getType().replaceAll(".", ""));
+                tipos = String.format("%s", t.getType().replace(".", ""));
             }
         }
         return tipos;

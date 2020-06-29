@@ -253,9 +253,6 @@ public class TelaLogin extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Email e/ou senha inválidos", "Erro", JOptionPane.ERROR_MESSAGE);
             }
         }
-
-        System.out.println(password);
-        System.out.println(txtEmail.getText());
 //        lblLoad.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imgs/loading.gif")));
      
     }

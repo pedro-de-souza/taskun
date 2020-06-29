@@ -50,6 +50,8 @@ public class Taskun extends javax.swing.JFrame {
 
         Conexao conectBanco = new Conexao();
         LocalDateTime dataHora = LocalDateTime.now();
+        
+        
 
         lblTempoAtividade.setText(os.getUptime());
         lblCPUDesempenho.setText(cpu.getDesempenho() + " %");

@@ -33,8 +33,8 @@ public class Conexao {
     private HD hd = new HD();
 
     // atributos para pegar os dados para a tabela Maquinas.
-    private Integer id_Maquina;
-    private Integer id_Cliente;
+    private static Integer id_Maquina;
+    private static Integer id_Cliente;
     private String nomeMaq;
     private String sistemOpera;
     private String tipoSistema;
@@ -138,7 +138,7 @@ public class Conexao {
             rs = stmtUpdate().executeQuery(sqlSelect);
             while (rs.next()) {
                 Integer id = rs.getInt("id_Cliente");
-                id_Cliente = id;
+                this.id_Cliente = id;
             }
 
             pst.execute(); //ps.getResultSet();
@@ -147,7 +147,7 @@ public class Conexao {
 
             if (result.next()) {
                 dadoExiste = true;
-                timer.scheduleAtFixedRate(chamandoEnviarDadosDash, TEMPO1, TEMPO1);
+//                timer.scheduleAtFixedRate(chamandoEnviarDadosDash, TEMPO1, TEMPO1);
 //                System.out.println(pst.getResultSet());
             } else {
                 dadoExiste = false;
@@ -187,10 +187,6 @@ public class Conexao {
             System.out.println("valor adicionado");
 
         } catch (SQLException e) {
-            String sqlInsert = String.format(" VALUES ('%s','%s','%s','%s',%s,%s,'%s',%s,'%s','%s','%s',%s,%s,'%s','%s','%s',%s);",
-                    this.getNomeMaq(), this.getSistemOpera(), this.getTipoSistema(), this.getModeloCPU(), this.getMemoriaRAM(), this.getmRAMUtilizavel(), this.getTipoMemoriaRAM(), this.getVelocidadeRAM(),
-                    this.getModeloHD(), this.getDiscoHD(), this.getHdETipo(), this.getUtilizavelHD(), this.getDisponivelHD(), this.getModeloGPU(), this.getMemoriaGPU(), this.getVersaoGPU(), this.getId_Cliente());
-            System.out.println(sqlInsert);
             System.out.println("Não foi possivel adicionar o valor");
             System.out.println(e);
         }
@@ -202,10 +198,10 @@ public class Conexao {
 
             String sqlAtualizar = "";
 
-            sqlAtualizar = String.format("UPDATE Maquina SET sistema_Operacional = '%s', tipo_sistema = '%s', cpu_modelo = '%s', memoria_ram_total = %s, memoria_ram_utilizavel = %s"
-                    + ", tipo_memoria_ram = '%s', velocidade_memoria_ram = %s, hd_modelo = '%s',hd_disco = '%s',  hd_e_tipo = '%s',  hd_utilizavel = %s, hd_disponivel = %s, modelo_gpu = '%s',  memoria_gpu = '%s', version_gpu = '%s'"
-                    + " where id_Maquina = %s;", this.getSistemOpera(), this.getTipoSistema(), this.getModeloCPU(), this.getMemoriaRAM(), this.getmRAMUtilizavel(), this.getTipoMemoriaRAM(), this.getVelocidadeRAM(),
-                    this.getModeloHD(), this.getDiscoHD(), this.getHdETipo(), this.getUtilizavelHD(), this.getDisponivelHD(), this.getModeloGPU(), this.getMemoriaGPU(), this.getVersaoGPU(), this.getId_Maquina());
+            sqlAtualizar = String.format("UPDATE Maquina SET nome_Maquina='%s', sistema_Operacional = '%s', tipo_sistema = '%s', cpu_modelo = '%s', memoria_ram_total = %s, memoria_ram_utilizavel = %s"
+                    + ", tipo_memoria_ram = '%s', velocidade_memoria_ram = %s, hd_modelo = '%s',hd_disco = '%s',  hd_e_tipo = '%s',  hd_utilizavel = %s, hd_disponivel = %s, modelo_gpu = '%s',  memoria_gpu = '%s', version_gpu = '%s',"
+                    + "fk_Cliente = %s where id_Maquina = %s;",this.getNomeMaq(), this.getSistemOpera(), this.getTipoSistema(), this.getModeloCPU(), this.getMemoriaRAM(), this.getmRAMUtilizavel(), this.getTipoMemoriaRAM(), this.getVelocidadeRAM(),
+                    this.getModeloHD(), this.getDiscoHD(), this.getHdETipo(), this.getUtilizavelHD(), this.getDisponivelHD(), this.getModeloGPU(), this.getMemoriaGPU(), this.getVersaoGPU(),this.getId_Cliente(), this.getId_Maquina());
 
             int updateCount = stmt.executeUpdate(sqlAtualizar);
 
@@ -274,24 +270,15 @@ public class Conexao {
                     os.getUptime(), cpu.getDesempenho(), cpu.getClockSpeedAtual(), cpu.getThreads(), cpu.getProcesses(),
                     ram.getDesempenhoMemoria(), ram.getDisponivel(), hd.getPorcentagemOcupada(), hd.getTempoTransferencia(os.hal.getDiskStores()),
                     gpu.getDesempenho(), this.id_Maquina);
+//            System.out.println(sqlInsert);
 
             pst = conect.prepareStatement(sqlInsert);
             pst.execute();
             System.out.println("Valor adicionado na Dashboard");
-            System.out.println(os.getUptime());
 
             // System.out.println(contador);
             // System.out.println(resultadoDivisao);
         } catch (SQLException e) {
-            String sqlInsert = "";
-            sqlInsert = String.format("INSERT INTO Dashboard"
-                    + "(data_Registro, desempenho_cpu,velocidade_cpu,threands,processos,desempenho_ram,"
-                    + "disponivel_ram,ocupado_hd,tempo_hd,desempenho_GPU,fk_Maquina) "
-                    + "VALUES ('%s', %s,%s, %s, %s, %s,%s, %s,%s, %s,%s);",
-                    os.getUptime(), cpu.getDesempenho(), cpu.getClockSpeedAtual(), cpu.getThreads(), cpu.getProcesses(),
-                    ram.getDesempenhoMemoria(), ram.getDisponivel(), hd.getPorcentagemOcupada(), hd.getTempoTransferencia(os.hal.getDiskStores()),
-                    gpu.getDesempenho(), this.id_Maquina);
-            System.out.println(sqlInsert);
             System.out.println("Não foi possivel adicionar o valor");
             System.out.println(e.getMessage());
         }
